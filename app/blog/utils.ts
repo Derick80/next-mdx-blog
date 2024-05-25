@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
-
+import { serialize } from 'next-mdx-remote/serialize'
+import { MDXRemote,type MDXRemoteSerializeResult } from 'next-mdx-remote'
+import readingTime from 'reading-time'
 type Metadata = {
   title: string
   author: string
@@ -8,6 +10,8 @@ type Metadata = {
   publishedAt: string
   categories: string[]
   published: string
+  readingTime: string
+  wordCount: number
 }
 
 function parseFrontmatter(fileContent: string) {
@@ -18,7 +22,7 @@ function parseFrontmatter(fileContent: string) {
   let frontMatterLines = frontMatterBlock.trim().split('\n')
   let metadata: Partial<Metadata> = {}
   // find the categories line in the frontmatter and store the values in a variant as an array
-  let categories = frontMatterLines
+  const categories = frontMatterLines
     .find((line) => line.includes('categories'))
     ?.split(': ')[1]
     .split(',')
@@ -29,16 +33,22 @@ function parseFrontmatter(fileContent: string) {
     categories!.length - 1
   ].replace(']', '')
   // remove the last element of the array to avoid adding the categories line to the metadata object
+
+  let metaData = [] as Metadata[]
   frontMatterLines.pop()
+
 
   frontMatterLines.forEach((line) => {
     let [key, ...valueArr] = line.split(': ')
     let value = valueArr.join(': ').trim()
-    value = value.replace(/^['"](.*)['"]$/, '$1') // Remove quotes
+    value = value.replace(/^['"](.*)['"]$/, '$1')
+
     metadata[key.trim() as keyof Omit<Metadata, 'categories'>] = value
   })
-  // add the categories array back to the end of the metadata object
-  metadata.categories = categories
+  // add the categories array back to the end of the metadata object and remove the quotes
+const fixedCategories = categories!.map((category) => category.replace(/^['"](.*)['"]$/, '$1'))
+
+  metadata.categories = fixedCategories
 
   // transform category to array
 
@@ -62,6 +72,7 @@ function getMDXData(dir: string) {
 
     return {
       metadata,
+      readingTime: metadata.readingTime,
       slug,
       content
     }
@@ -70,6 +81,30 @@ function getMDXData(dir: string) {
 
 export function getBlogPosts() {
   return getMDXData(path.join(process.cwd(), 'app', 'blog', 'posts'))
+}
+
+export async function getBlogPost (slug: string) {
+  let mdxFile = await serialize(path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`))
+  if (!mdxFile) {
+    return null
+  }
+  const { metadata, content } = readMDXFile(
+    path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`)
+  )
+
+  const data = {
+    metadata: {
+      ...metadata,
+      readingTime: readingTime(content).text,
+      wordCount: content.split(/\s+/gu).length
+    },
+
+    content,
+    slug,
+    mdxFile
+  }
+
+  return data
 }
 
 export function formatDate(date: string, includeRelative = false) {

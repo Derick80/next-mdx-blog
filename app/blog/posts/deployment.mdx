@@ -7,17 +7,21 @@ published: true
 categories: ['scoping', 'planning', 'deployment', 'documentation']
 ---
 
+<TContainer />
 ## Deploying to [Fly.io](https://fly.io)
-
+<BlogImage
+  cloudinaryId="Japan_2023/Kanazawa/PXL_20230131_110609004.MP_tndiyy"
+  imgProps={{alt: 'Kanazawa, Japan'}}
+/>
 ## Fly Setup
 
 1. [Install `flyctl`](https://fly.io/docs/getting-started/installing-flyctl/)
 
 2. Sign up and log in to Fly
 
-   ```sh
-   flyctl auth signup
-   ```
+```sh
+flyctl auth signup
+```
 
 3. Setup Fly. It might ask if you want to deploy, say no since you haven't built the app yet.
 
@@ -69,3 +73,18 @@ CNAME www FLYDEV-APP-NAME.fly.dev
 ```
 
 ## Consequences
+```
+function getImageBuilder (
+    id: string,
+    alt: string = '',
+    { className, style }: { className?: string; style?: CSSProperties } = {},
+): ImageBuilder {
+    function imageBuilder (transformations?: TransformerOption) {
+        return buildImageUrl(id, { transformations })
+    }
+    imageBuilder.alt = alt
+    imageBuilder.id = id
+    imageBuilder.className = className
+    imageBuilder.style = style
+    return imageBuilder
+}

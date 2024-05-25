@@ -4,13 +4,31 @@ author: 'Derick Hoskinson, Ph.D.'
 description: 'Building a Community at VariantAlleles.com'
 publishedAt: 2023-11-17
 published: true
-categories: ['scoping', 'planning', 'documentation']
+categories: ['community', 'planning', 'documentation']
 ---
 
-![stupdi](https://res.cloudinary.com/dch-photo/image/upload/v1675678877/Japan_2023/Kanazawa/PXL_20230131_110609004.MP_tndiyy.jpg)
+
+<BlogImage
+  cloudinaryId="Japan_2023/Kanazawa/PXL_20230131_110609004.MP_tndiyy"
+  imgProps={{alt: 'Kanazawa, Japan'}}
+/>
 
 ## Overview
-
+```ts
+function getImageBuilder (
+    id: string,
+    alt: string = '',
+    { className, style }: { className?: string; style?: CSSProperties } = {},
+): ImageBuilder {
+    function imageBuilder (transformations?: TransformerOption) {
+        return buildImageUrl(id, { transformations })
+    }
+    imageBuilder.alt = alt
+    imageBuilder.id = id
+    imageBuilder.className = className
+    imageBuilder.style = style
+    return imageBuilder
+}
 ```sh
   flyctl auth signup
   flytctl launch

@@ -1,0 +1,10 @@
+.eslintrc.json
+components.json
+next.config.mjs
+package-lock.json
+package.json
+prettier.config.js
+postcss.config.mjs
+tailwind.config.mjs
+tsconfig.json
+README.md

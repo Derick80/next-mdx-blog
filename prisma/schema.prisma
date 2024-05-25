@@ -12,3 +12,56 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String?  @unique
+  avatarUrl String?
+  password  String?
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  loves Love[]
+}
+
+model Content {
+  slug          String            @id @unique
+  title         String
+  author        String
+  description   String
+  content       String?
+  datePublished String
+  published     Boolean?
+  categories    ContentCategory[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  loves         Love[]
+}
+
+model ContentCategory {
+  id        String  @id @default(uuid())
+  title     String  @unique
+  content   Content @relation(fields: [contentId], references: [slug], onDelete: Cascade, onUpdate: Cascade)
+  contentId String
+
+  @@unique([contentId, title])
+  @@index([contentId])
+}
+
+model Love {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  content   Content @relation(fields: [contentId], references: [slug], onDelete: Cascade, onUpdate: Cascade)
+  contentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([contentId, userId])
+  @@index([contentId, userId])
+  @@index([contentId])
+  @@index([userId])
+}

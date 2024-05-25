@@ -8,6 +8,7 @@ import {
   CardFooter
 } from './ui/card'
 import { Muted } from './typography/typography'
+import { Badge } from './ui/badge'
 
 export type BlogPost = {
   slug: string
@@ -23,6 +24,9 @@ export type BlogPost = {
 }
 
 export function BlogPosts({ allBlogs }: { allBlogs: BlogPost[] }) {
+  const slug = allBlogs.map((post) => post.slug)
+  console.log(slug)
+
   return (
     <div>
       {allBlogs
@@ -36,17 +40,28 @@ export function BlogPosts({ allBlogs }: { allBlogs: BlogPost[] }) {
         })
         .map((post) => (
           <Card key={post.slug}>
-            <CardHeader>
+            <CardHeader
+              className='pb-1 pt-2'
+            >
               <CardTitle>
                 <Link href={`/blog/${post.slug}`}>
                   <Muted>{post.metadata.title}</Muted>
                 </Link>
               </CardTitle>
-              <CardContent>
-                <CardDescription>{post.metadata.description}</CardDescription>
+            </CardHeader>
+              <CardContent className='pb-2 gap-4 w-full'>
+                <CardDescription
+                  className='italic text-xs'
+              >  { post.metadata.description }</CardDescription>
+                <div className='flex flex-row gap-1 md:gap-2'>
+                  { post.metadata.categories.map((category) => (
+                    <Badge key={ category }>{ category }</Badge>
+                  )) }
+                </div>
+
                 <CardFooter>{post.metadata.author}</CardFooter>
               </CardContent>
-            </CardHeader>
+
           </Card>
         ))}
     </div>

@@ -1,10 +1,15 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## MDX Blog
+- https://www.luckymedia.dev/blog/syntax-highlighting-with-shiki-react-server-components-and-next-js
+- https://github.com/nikolailehbrink/shiki-next/tree/master
+-
 
 ### Resources
 
 - [Built a Blog with Next.js and MDX](https://github.com/vercel/examples/tree/main/solutions/blog)
+
+- [Image loading](https://github.com/kentcdodds/kentcdodds.com/blob/c5e26ec85b90a135730db7468b70f592b4cbb6dc/content/blog/building-an-awesome-image-loading-experience.mdx#L256)
 
 ## Getting Started
 
