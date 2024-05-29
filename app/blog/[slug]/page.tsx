@@ -1,13 +1,14 @@
 import { getBlogPost, getBlogPosts } from '../utils'
 import { notFound } from 'next/navigation'
-import { Code, components, CustomMDX } from '@/components/mdx'
-import { TContainer } from '@/app/blog/posts/tst-container'
+import { Code, components, CustomMDX, Table } from '@/components/mdx'
 import React from 'react'
 import { BlogImage } from '@/components/post-image'
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm'
 import { delimiter } from 'path'
 import { useMDXComponents } from '@/mdx-components'
+import { Button } from '@/components/ui/button'
+import rehypeSlug from 'rehype-slug'
 
 //  this will generate the static paths for the blog posts at build time
 export async function generateStaticParams() {
@@ -30,42 +31,32 @@ export default async function BlogPost({
   if (!data) {
     notFound()
   }
-console.log(data.metadata,'data');
 
   const options = {
     mdxOptions: {
       remarkPlugins: [
-        remarkGfm, {
-          table: {
-            type: 'table',
-            delimiter: {
-              row: '\n',
-              cell: '|',
-              header: '-'
-            }
-          }
+        remarkGfm],
 
-        }],
-
-        rehypePlugins: [rehypeHighlight]
+      rehypePlugins: [rehypeHighlight],
+              rehypeSlug,
     }
   }
 
 
   return (
-    <div className=' mt-10 w-full mx-auto max-w-3xl'>
+    <div className='rounded-md text-wrap shadow p-1 pt-0 prose  prose-slate dark-prose-invert'>
       <h1 className='text-6xl font-bold'>{data.metadata.title}</h1>
-      <div className='dark:prose-dark prose mt-10'>
-        <CustomMDX options={ options } components={ {
+]        <CustomMDX options={ options } components={ {
           ...components,
           ...useMDXComponents(data.content, {
-             TContainer,
+            Button,
+            Table,
+
           }
           )
 
         }}
           source={ data.content } />
-      </div>
     </div>
   )
 }

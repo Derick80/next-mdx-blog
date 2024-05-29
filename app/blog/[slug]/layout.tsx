@@ -2,7 +2,6 @@
 
 import { notFound } from 'next/navigation'
 import { getBlogPosts } from '../utils'
-import PostProvider from '@/components/contexts/post-context'
 export default async function Layout({
   params,
   children

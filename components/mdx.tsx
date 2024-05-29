@@ -6,10 +6,14 @@ import { BlogImage } from './post-image'
 import rehypeHighlight from 'rehype-highlight';
 import { Code } from '@/app/actions'
 import remarkGfm from 'remark-gfm'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeSlug from 'rehype-slug'
+import rehypePrettyCode from 'rehype-pretty-code'
 import { useMDXComponents } from '@/mdx-components'
 // ![stupdi](https://res.cloudinary.com/dch-photo/image/upload/v1675678877/Japan_2023/Kanazawa/PXL_20230131_110609004.MP_tndiyy.jpg)
 import {compile} from '@mdx-js/mdx'
 import clsx from 'clsx'
+import { Button } from './ui/button'
 interface TableData {
   code: string
   headers: string[]
@@ -21,7 +25,7 @@ interface TableProps {
 }
 function Table ({ data }: TableProps) {
   const tableCode = compile(data.code)
-  console.log(tableCode)
+  console.log(tableCode, 'tableCode')
   let headers = data.headers.map((header, index) => (
     <th key={index}>{header}</th>
   ))
@@ -81,14 +85,18 @@ function CustomLink({
 // }
 // @ts-expect-error need to figure this out at some point.
 
-const Paragraph: React.FC<any> = props => {
-  if (typeof props.children !== 'string' && props.children.type === 'img') {
+const Paragraph = (props: { children?: React.ReactNode }) => {
+  if (typeof props.children !== 'string' && props.children === 'img') {
     return <>{props.children}</>
   }
 
-  return <p {...props} />
+  return (
+    <p
+      className='text-base leading- font-serif [&:not(:first-child)]:mt-6'
+      {...props}
+    />
+  )
 }
-
 
 
 const components = {
@@ -99,23 +107,6 @@ const components = {
 
 
     />
-  },
-   table: function Table({
-    className,
-    ...props
-  }: React.ComponentPropsWithoutRef<'table'>) {
-    return (
-      <div
-        className={clsx(
-          'my-10 max-sm:-mx-6 max-sm:flex max-sm:overflow-x-auto',
-          className,
-        )}
-      >
-        <div className="max-sm:min-w-full max-sm:flex-none max-sm:px-6">
-          <table {...props} />
-        </div>
-      </div>
-    )
   },
   h1: (props: { children: string }) => {
     return <H1>{props.children}</H1>
@@ -150,7 +141,12 @@ const options = {
   ],
   remarkGfm,
   rehypePlugins: [
-    rehypeHighlight
+    rehypeSlug,
+    [rehypeHighlight, { ignoreMissing: true }],
+    [rehypeAutolinkHeadings, {
+      behavior:'wrap',
+    }],
+  rehypePrettyCode
   ],
 
 }
@@ -163,7 +159,10 @@ const options = {
         ...components, ...(props.components || {
           BlogImage,
           Table,
-
+          CustomLink,
+          Code,
+          H1,
+          Button
       }) } }
       options={ options }
     />

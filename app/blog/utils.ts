@@ -34,7 +34,6 @@ function parseFrontmatter(fileContent: string) {
   ].replace(']', '')
   // remove the last element of the array to avoid adding the categories line to the metadata object
 
-  let metaData = [] as Metadata[]
   frontMatterLines.pop()
 
 

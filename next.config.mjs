@@ -2,6 +2,7 @@ import remarkGfm from 'remark-gfm'
 import createMDX from '@next/mdx'
 import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
 /** @type {import('next').NextConfig} */
 /** @type {import('rehype-pretty-code').Options} */
@@ -39,13 +40,16 @@ const withMDX = createMDX({
     }
     ],
     rehypePlugins: [ rehypePrettyCode, rehypeHighlight,
+      [ rehypeAutolinkHeadings, {
+        behavior: 'wrap',
+      }
+      ]
 
     ]
   },
   extension: /\.mdx?$/,
   format: 'mdx',
-  rehypePlugins: [ rehypePrettyCode, rehypeHighlight,
-  ],
+
      providerImportSource: '@mdx-js/react',
 
 })

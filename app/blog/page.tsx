@@ -4,7 +4,6 @@ import { BlogPosts } from '@/components/blog-post'
 export default async function Blog() {
   const blogposts = getBlogPosts()
   if (!blogposts) return <div>loading...</div>
-  console.log(blogposts, 'blogposts');
 
   return (
     <div className='flex min-h-screen flex-col items-center justify-center py-2'>
