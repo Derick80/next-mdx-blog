@@ -23,4 +23,18 @@ const nextConfig = {
 
 }
 
-export default nextConfig
+// I do not know if this actually matters. My mdx content is working without this.
+
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [
+      rehypePrettyCode,
+      rehypeHighlight,
+      rehypeAutolinkHeadings
+    ]
+  }
+})
+
+export default  withMDX(nextConfig)

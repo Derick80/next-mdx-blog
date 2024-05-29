@@ -7,6 +7,8 @@ published: true
 categories: ['scoping', 'planning', 'deployment', 'documentation']
 ---
 
+import { Button } from '/components/ui/button.tsx'
+
 ## Deploying to [Fly.io](https://fly.io)
 
 <BlogImage
@@ -24,6 +26,13 @@ categories: ['scoping', 'planning', 'deployment', 'documentation']
 flyctl auth signup
 ```
 
+                <Button
+
+      >
+
+click mode
+
+</Button>
 3. Setup Fly. It might ask if you want to deploy, say no since you haven't built the app yet.
 
 ```sh

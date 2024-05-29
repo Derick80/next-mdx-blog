@@ -6,9 +6,10 @@ import readingTime from 'reading-time'
 import matter from 'gray-matter'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
-import { compileMDX } from 'next-mdx-remote/rsc'
+import { compileMDX, CompileMDXResult } from 'next-mdx-remote/rsc'
 import { BlogImage } from '@/components/post-image'
 import { Button } from '@/components/ui/button'
+import { ReactElement } from 'react'
 type Metadata = {
   title: string
   author: string
@@ -20,6 +21,9 @@ type Metadata = {
   wordCount: number
 }
 
+type CompiledMdx = {
+  content: ReactElement | null
+}
 function parseFrontmatter(fileContent: string) {
   let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
   let match = frontmatterRegex.exec(fileContent)
@@ -89,33 +93,13 @@ export function getBlogPosts() {
   return getMDXData(path.join(process.cwd(), 'app', 'blog', 'posts'))
 }
 
-export async function getBlogPost(slug: string) {
-  let mdxFile = await serialize(
-    path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`)
-  )
-  if (!mdxFile) {
-    return null
-  }
-  const { metadata, content } = readMDXFile(
-    path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`)
-  )
-  const mdxSource = await serialize(content, {
-    scope: metadata,
-    mdxOptions: {
-      remarkPlugins: [(await import('remark-gfm')).default]
-    }
-  })
-
-  return { metadata, mdxSource }
-}
-
-export async function getPostBySlug(slug: string) {
+export async function getPostBySlug(slug: string): Promise<CompiledMdx> {
   try {
     const fileData = fs.readFileSync(
       path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`),
       'utf-8'
     )
-    const { frontmatter, content } = await compileMDX<Metadata>({
+    const { content } = await compileMDX<CompileMDXResult>({
       source: fileData,
       options: {
         parseFrontmatter: true,
@@ -131,66 +115,12 @@ export async function getPostBySlug(slug: string) {
     })
 
     return {
-      frontMatter: frontmatter,
       content
     }
   } catch (error) {
     console.log(error)
-    return null
-  }
-}
-
-export function formatDate(date: string, includeRelative = false) {
-  let currentDate = new Date()
-  console.log(date, 'date')
-
-  if (!date.includes('T')) {
-    date = `${date}T00:00:00`
-  }
-  let targetDate = new Date(date)
-
-  let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear()
-  let monthsAgo = currentDate.getMonth() - targetDate.getMonth()
-  let daysAgo = currentDate.getDate() - targetDate.getDate()
-
-  let formattedDate = ''
-
-  if (yearsAgo > 0) {
-    formattedDate = `${yearsAgo}y ago`
-  } else if (monthsAgo > 0) {
-    formattedDate = `${monthsAgo}mo ago`
-  } else if (daysAgo > 0) {
-    formattedDate = `${daysAgo}d ago`
-  } else {
-    formattedDate = 'Today'
-  }
-
-  let fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  })
-
-  if (!includeRelative) {
-    return fullDate
-  }
-
-  return `${fullDate} (${formattedDate})`
-}
-
-const components = {
-  Button,
-  BlogImage
-}
-export async function parseMdx(source: string) {
-  return await compileMDX({
-    source: source,
-    components,
-    options: {
-      mdxOptions: {
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [rehypeHighlight]
-      }
+    return {
+      content: null
     }
-  })
+  }
 }

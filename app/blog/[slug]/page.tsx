@@ -1,13 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { getBlogPosts, getPostBySlug, parseMdx } from '../utils'
+import { getBlogPosts, getPostBySlug } from '../utils'
 import React from 'react'
-import matter from 'gray-matter'
-import { serialize } from 'next-mdx-remote/serialize'
-import { MDXRemote } from 'next-mdx-remote'
-import { Button } from '@/components/ui/button'
-import { H2 } from '@/components/typography/typography'
-import { BlogImage } from '@/components/post-image'
 
 //  this will generate the static paths for the blog posts at build time
 export async function generateStaticParams() {
@@ -26,7 +20,9 @@ export default async function BlogPost({
   }
 }) {
   const { slug } = params
-  const { frontmatter, content } = await getPostBySlug(slug)
+  const { content } = await getPostBySlug(slug)
+  console.log(content)
+
   return (
     <div className='dark-prose-invert prose prose-slate text-wrap rounded-md p-1  pt-0 shadow'>
       {content}
