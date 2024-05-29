@@ -3,6 +3,12 @@ import path from 'path'
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote,type MDXRemoteSerializeResult } from 'next-mdx-remote'
 import readingTime from 'reading-time'
+import matter from 'gray-matter'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
+import { compileMDX } from 'next-mdx-remote/rsc'
+import { BlogImage } from '@/components/post-image'
+import { Button } from '@/components/ui/button'
 type Metadata = {
   title: string
   author: string
@@ -90,20 +96,44 @@ export async function getBlogPost (slug: string) {
   const { metadata, content } = readMDXFile(
     path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`)
   )
+  const mdxSource = await serialize(content, {
+    scope: metadata,
+    mdxOptions: {
+      remarkPlugins:[(await import('remark-gfm')).default],
+}
+  })
 
-  const data = {
-    metadata: {
-      ...metadata,
-      readingTime: readingTime(content).text,
-      wordCount: content.split(/\s+/gu).length
-    },
+  return { metadata, mdxSource }
+}
 
-    content,
-    slug,
-    mdxFile
+export async function getPostBySlug(slug: string) {
+  try {
+     const fileData = fs.readFileSync(path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`), 'utf-8')
+    const { frontmatter, content } = await compileMDX<Metadata>({
+      source: fileData,
+      options: {
+        parseFrontmatter: true,
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+          rehypePlugins: [rehypeHighlight]
+        }
+      },
+      components: {
+        BlogImage,
+        Button
+      }
+    })
+
+    return {
+      frontMatter: frontmatter,
+      content
+    }
+   }
+
+  catch (error) {
+    console.log(error)
+    return null
   }
-
-  return data
 }
 
 export function formatDate(date: string, includeRelative = false) {
@@ -142,4 +172,21 @@ export function formatDate(date: string, includeRelative = false) {
   }
 
   return `${fullDate} (${formattedDate})`
+}
+
+ const components = {
+    Button,
+    BlogImage
+  }
+export async function parseMdx (source: string) {
+  return await compileMDX({
+    source: source,
+    components,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeHighlight]
+      }
+    }
+  })
 }

@@ -1,14 +1,14 @@
-import { getBlogPost, getBlogPosts } from '../utils'
-import { notFound } from 'next/navigation'
-import { Code, components, CustomMDX, Table } from '@/components/mdx'
+import fs from 'fs'
+import path from 'path'
+import { getBlogPosts, getPostBySlug, parseMdx } from '../utils'
 import React from 'react'
-import { BlogImage } from '@/components/post-image'
-import rehypeHighlight from 'rehype-highlight';
-import remarkGfm from 'remark-gfm'
-import { delimiter } from 'path'
-import { useMDXComponents } from '@/mdx-components'
+import matter from 'gray-matter'
+import { serialize } from 'next-mdx-remote/serialize'
+import { MDXRemote } from 'next-mdx-remote'
 import { Button } from '@/components/ui/button'
-import rehypeSlug from 'rehype-slug'
+import { H2 } from '@/components/typography/typography'
+import { BlogImage } from '@/components/post-image'
+
 
 //  this will generate the static paths for the blog posts at build time
 export async function generateStaticParams() {
@@ -27,36 +27,35 @@ export default async function BlogPost({
   }
 }) {
   const { slug } = params
-  const data = await getBlogPost(slug)
-  if (!data) {
-    notFound()
-  }
+const {frontmatter, content} = await getPostBySlug(slug)
 
-  const options = {
-    mdxOptions: {
-      remarkPlugins: [
-        remarkGfm],
 
-      rehypePlugins: [rehypeHighlight],
-              rehypeSlug,
-    }
-  }
+
+
+console.log(content,'content from slug page');
+
 
 
   return (
     <div className='rounded-md text-wrap shadow p-1 pt-0 prose  prose-slate dark-prose-invert'>
-      <h1 className='text-6xl font-bold'>{data.metadata.title}</h1>
-]        <CustomMDX options={ options } components={ {
-          ...components,
-          ...useMDXComponents(data.content, {
-            Button,
-            Table,
 
-          }
-          )
+    {content}
 
-        }}
-          source={ data.content } />
     </div>
   )
+}
+
+
+
+export async function getStaticPaths () {
+  const files = fs.readdirSync(path.join(process.cwd(), 'app', 'blog', 'posts'))
+  const paths = files.map((filename) => ({
+    params: {
+      slug: filename.replace('.mdx', '')
+    }
+  }))
+  return {
+    paths,
+    fallback: false
+  }
 }
