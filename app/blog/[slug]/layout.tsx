@@ -18,9 +18,5 @@ export default async function Layout({
     notFound()
   }
 
-  return (
-    <div className=' mt-10 w-full mx-auto max-w-3xl'>
-      {children}
-    </div>
-  )
+  return <div className=' mx-auto mt-10 w-full max-w-3xl'>{children}</div>
 }

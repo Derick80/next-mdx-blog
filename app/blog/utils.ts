@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { serialize } from 'next-mdx-remote/serialize'
-import { MDXRemote,type MDXRemoteSerializeResult } from 'next-mdx-remote'
+import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote'
 import readingTime from 'reading-time'
 import matter from 'gray-matter'
 import remarkGfm from 'remark-gfm'
@@ -42,7 +42,6 @@ function parseFrontmatter(fileContent: string) {
 
   frontMatterLines.pop()
 
-
   frontMatterLines.forEach((line) => {
     let [key, ...valueArr] = line.split(': ')
     let value = valueArr.join(': ').trim()
@@ -51,7 +50,9 @@ function parseFrontmatter(fileContent: string) {
     metadata[key.trim() as keyof Omit<Metadata, 'categories'>] = value
   })
   // add the categories array back to the end of the metadata object and remove the quotes
-const fixedCategories = categories!.map((category) => category.replace(/^['"](.*)['"]$/, '$1'))
+  const fixedCategories = categories!.map((category) =>
+    category.replace(/^['"](.*)['"]$/, '$1')
+  )
 
   metadata.categories = fixedCategories
 
@@ -88,8 +89,10 @@ export function getBlogPosts() {
   return getMDXData(path.join(process.cwd(), 'app', 'blog', 'posts'))
 }
 
-export async function getBlogPost (slug: string) {
-  let mdxFile = await serialize(path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`))
+export async function getBlogPost(slug: string) {
+  let mdxFile = await serialize(
+    path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`)
+  )
   if (!mdxFile) {
     return null
   }
@@ -99,8 +102,8 @@ export async function getBlogPost (slug: string) {
   const mdxSource = await serialize(content, {
     scope: metadata,
     mdxOptions: {
-      remarkPlugins:[(await import('remark-gfm')).default],
-}
+      remarkPlugins: [(await import('remark-gfm')).default]
+    }
   })
 
   return { metadata, mdxSource }
@@ -108,7 +111,10 @@ export async function getBlogPost (slug: string) {
 
 export async function getPostBySlug(slug: string) {
   try {
-     const fileData = fs.readFileSync(path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`), 'utf-8')
+    const fileData = fs.readFileSync(
+      path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`),
+      'utf-8'
+    )
     const { frontmatter, content } = await compileMDX<Metadata>({
       source: fileData,
       options: {
@@ -128,9 +134,7 @@ export async function getPostBySlug(slug: string) {
       frontMatter: frontmatter,
       content
     }
-   }
-
-  catch (error) {
+  } catch (error) {
     console.log(error)
     return null
   }
@@ -174,11 +178,11 @@ export function formatDate(date: string, includeRelative = false) {
   return `${fullDate} (${formattedDate})`
 }
 
- const components = {
-    Button,
-    BlogImage
-  }
-export async function parseMdx (source: string) {
+const components = {
+  Button,
+  BlogImage
+}
+export async function parseMdx(source: string) {
   return await compileMDX({
     source: source,
     components,

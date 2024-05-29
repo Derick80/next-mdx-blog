@@ -40,28 +40,26 @@ export function BlogPosts({ allBlogs }: { allBlogs: BlogPost[] }) {
         })
         .map((post) => (
           <Card key={post.slug}>
-            <CardHeader
-              className='pb-1 pt-2'
-            >
+            <CardHeader className='pb-1 pt-2'>
               <CardTitle>
                 <Link href={`/blog/${post.slug}`}>
                   <Muted>{post.metadata.title}</Muted>
                 </Link>
               </CardTitle>
             </CardHeader>
-              <CardContent className='pb-2 gap-4 w-full'>
-                <CardDescription
-                  className='italic text-xs'
-              >  { post.metadata.description }</CardDescription>
-                <div className='flex flex-row gap-1 md:gap-2'>
-                  { post.metadata.categories.map((category) => (
-                    <Badge key={ category }>{ category }</Badge>
-                  )) }
-                </div>
+            <CardContent className='w-full gap-4 pb-2'>
+              <CardDescription className='text-xs italic'>
+                {' '}
+                {post.metadata.description}
+              </CardDescription>
+              <div className='flex flex-row gap-1 md:gap-2'>
+                {post.metadata.categories.map((category) => (
+                  <Badge key={category}>{category}</Badge>
+                ))}
+              </div>
 
-                <CardFooter>{post.metadata.author}</CardFooter>
-              </CardContent>
-
+              <CardFooter>{post.metadata.author}</CardFooter>
+            </CardContent>
           </Card>
         ))}
     </div>

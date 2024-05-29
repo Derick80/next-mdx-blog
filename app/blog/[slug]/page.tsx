@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { H2 } from '@/components/typography/typography'
 import { BlogImage } from '@/components/post-image'
 
-
 //  this will generate the static paths for the blog posts at build time
 export async function generateStaticParams() {
   const posts = getBlogPosts()
@@ -27,27 +26,15 @@ export default async function BlogPost({
   }
 }) {
   const { slug } = params
-const {frontmatter, content} = await getPostBySlug(slug)
-
-
-
-
-console.log(content,'content from slug page');
-
-
-
+  const { frontmatter, content } = await getPostBySlug(slug)
   return (
-    <div className='rounded-md text-wrap shadow p-1 pt-0 prose  prose-slate dark-prose-invert'>
-
-    {content}
-
+    <div className='dark-prose-invert prose prose-slate text-wrap rounded-md p-1  pt-0 shadow'>
+      {content}
     </div>
   )
 }
 
-
-
-export async function getStaticPaths () {
+export async function getStaticPaths() {
   const files = fs.readdirSync(path.join(process.cwd(), 'app', 'blog', 'posts'))
   const paths = files.map((filename) => ({
     params: {

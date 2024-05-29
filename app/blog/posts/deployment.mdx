@@ -8,9 +8,10 @@ categories: ['scoping', 'planning', 'deployment', 'documentation']
 ---
 
 ## Deploying to [Fly.io](https://fly.io)
+
 <BlogImage
-  cloudinaryId="Japan_2023/Kanazawa/PXL_20230131_110609004.MP_tndiyy"
-  imgProps={{alt: 'Kanazawa, Japan'}}
+  cloudinaryId='Japan_2023/Kanazawa/PXL_20230131_110609004.MP_tndiyy'
+  imgProps={{ alt: 'Kanazawa, Japan' }}
 />
 
 ## Fly Setup
@@ -73,6 +74,7 @@ CNAME www FLYDEV-APP-NAME.fly.dev
 ```
 
 ## Consequences
+
 ```
 function getImageBuilder (
     id: string,
@@ -88,3 +90,4 @@ function getImageBuilder (
     imageBuilder.style = style
     return imageBuilder
 }
+```
