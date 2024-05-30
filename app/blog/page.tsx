@@ -1,5 +1,5 @@
-import { getBlogPosts } from './utils'
 import { BlogPosts } from '@/components/blog-post'
+import { getBlogPosts } from './utils'
 
 export default async function Blog() {
   const blogposts = getBlogPosts()

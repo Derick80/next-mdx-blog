@@ -12,7 +12,9 @@ export default async function Layout({
   children: React.ReactNode
 }) {
   const { slug } = params
-  const post = getBlogPosts().find((post) => post.slug === slug)
+  const posts = await getBlogPosts()
+  const post = posts.find((post) => post.slug === slug)
+
 
   if (!post) {
     notFound()

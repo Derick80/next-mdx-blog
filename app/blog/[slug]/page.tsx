@@ -1,11 +1,14 @@
 import fs from 'fs'
 import path from 'path'
-import { getBlogPosts, getPostBySlug } from '../utils'
 import React from 'react'
+import { Code, CustomMDX } from '@/components/mdx'
+import { MDXProvider } from '@mdx-js/react'
+import { getBlogPosts, getPostBySlug } from '../utils'
+import { BlogImage } from '@/components/post-image'
 
 //  this will generate the static paths for the blog posts at build time
 export async function generateStaticParams() {
-  const posts = getBlogPosts()
+  const posts = await getBlogPosts()
   return posts.map((post) => ({
     params: {
       slug: post.slug
@@ -20,25 +23,15 @@ export default async function BlogPost({
   }
 }) {
   const { slug } = params
-  const { content } = await getPostBySlug(slug)
-  console.log(content)
+  const  post = await getPostBySlug(slug)
+
+  if (!post) return <div>loading...</div>
+  console.log(post, 'post'  );
 
   return (
     <div className='dark-prose-invert prose prose-slate text-wrap rounded-md p-1  pt-0 shadow'>
-      {content}
+     {post.content }
     </div>
   )
 }
 
-export async function getStaticPaths() {
-  const files = fs.readdirSync(path.join(process.cwd(), 'app', 'blog', 'posts'))
-  const paths = files.map((filename) => ({
-    params: {
-      slug: filename.replace('.mdx', '')
-    }
-  }))
-  return {
-    paths,
-    fallback: false
-  }
-}

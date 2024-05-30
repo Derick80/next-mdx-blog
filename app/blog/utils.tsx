@@ -10,6 +10,7 @@ import { compileMDX, CompileMDXResult } from 'next-mdx-remote/rsc'
 import { BlogImage } from '@/components/post-image'
 import { Button } from '@/components/ui/button'
 import { ReactElement } from 'react'
+import { Code, Table } from '@/components/mdx'
 type Metadata = {
   title: string
   author: string
@@ -94,33 +95,44 @@ export function getBlogPosts() {
 }
 
 export async function getPostBySlug(slug: string): Promise<CompiledMdx> {
-  try {
+
     const fileData = fs.readFileSync(
       path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`),
       'utf-8'
     )
-    const { content } = await compileMDX<CompileMDXResult>({
-      source: fileData,
+ async function bundleMdxContent(source: string) {
+    const data = await compileMDX({
+      source,
       options: {
         parseFrontmatter: true,
         mdxOptions: {
           remarkPlugins: [remarkGfm],
-          rehypePlugins: [rehypeHighlight]
-        }
+          rehypePlugins: []
+        },
+        scope:
+          {BlogImage,
+          Button,
+          Table,
+          Code}
+
       },
-      components: {
-        BlogImage,
-        Button
-      }
+      components: { BlogImage, Button, Code }
     })
 
-    return {
-      content
-    }
-  } catch (error) {
-    console.log(error)
-    return {
-      content: null
+   return {
+     content: data.content,
+     frontmatter: {
+       ...data.frontmatter,
+       readingTime: readingTime(fileData).text,
+       wordCount: fileData.split(/\s+/gu).length,
+        slug
+
+     }
     }
   }
+
+  return await bundleMdxContent(fileData)
+
+
+
 }

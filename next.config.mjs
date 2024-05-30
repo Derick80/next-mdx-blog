@@ -30,9 +30,7 @@ const withMDX = createMDX({
   options: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [
-      rehypePrettyCode,
-      rehypeHighlight,
-      rehypeAutolinkHeadings
+
     ]
   }
 })
